@@ -1,0 +1,203 @@
+
+$(document).ready(function(){
+	get_corpInfo();
+});
+
+function get_corpInfo(){
+	let token				=	$('input[name="token"]').val();
+	//let tempUser 			=	$('input[name="tempUser"]').val();
+
+	let url 				=	'/goods/event/index_get_corp.php';
+	let dataType			=	'json';
+	let param				= 	{
+		token					:	token
+	};
+
+	postService(url, dataType, param, function(data){
+		let corp 			=	data.corp;
+		let cateList 		=	data.cateList;
+		let allGoods 		=	data.allGoods;
+		let cartNum 		=	data.cartNum;
+		let isHoliday 		=	data.isHoliday;
+		let reviewStar 		=	data.reviewStar;
+		let reviewStarStr 	=	data.reviewStarStr;
+		let reviewList 		=	data.reviewList;
+		let orderInfo 		=	data.orderInfo;
+
+		// 업체정보
+		if(corp != ''){
+			for(var i = 1 ; i <= 5 ; i ++){
+			}
+
+			// 여기 아래꺼 for 문안에 넣어야함
+			let imgStr 						=	'';
+			if(corp.corpImg1){
+				imgStr 					+=	'<div class="sliderImgSingle">';
+				imgStr 					+=	' <img src="http://ars.heeyam.com'+corp.corpImg1+'">';
+				imgStr 					+=	'</div>';
+			}
+
+			$('.rateDisplay').html(reviewStar);
+			if(reviewStarStr > 0){
+				for(var i = 1 ; i <= reviewStarStr ; i ++){
+					$('#star'+i).addClass('activated');
+				}
+			}
+
+			$('#goodsImgSel').append(imgStr);
+			$('#corpName').append(corp.corpName);
+			$('#reviewAvg').append(corp.reviewAvg);
+			$('#minPrice').append(numberWithCommas(corp.minPrice)+' 원');
+			$('#minPriceTab').append(numberWithCommas(corp.minPrice)+' 원');
+			$('#avgTime').append(corp.deliveryTimeS+' ~ '+corp.deliveryTimeE);
+
+			$('#corpInfo').append(corp.corpInfo);
+			$('#corpAddr').append(corp.corpAddr1+' '+corp.corpAddr2);
+			$('#corpPhone').append(corp.corpPhone1+'-'+corp.corpPhone2+'-'+corp.corpPhone3);
+			$('#corpSubName').html(corp.corpSubName);
+			$('#corpNum').html(corp.corpNum);
+			$('#originMark').html(corp.originMark);
+
+			if(corp.isOnTime == 1){
+				$('#openTime').append('<div class="tip">(※ 영업시간 외에는 주문을 받지 않습니다.)</div>');
+			}
+
+			if(isHoliday == 'Y'){
+				$('#isHoliday').append('※ 오늘은 정기휴무일 입니다.');
+			}
+		}
+
+		// 카테고리, 상품정보
+		let str				=	'';
+		if(cateList.length){
+			$.each(cateList, function(index, cate){
+				var goodsList 		=	cate.goodsList;
+
+					if(goodsList.length){
+
+						str 			+=	'<div class="menuSubTitle">'+cate.cateName+'</div>';
+						str 			+=	'<ul>';
+
+
+						$.each(goodsList, function(index, goods) {
+							str 			+=	'	<li>';
+							str 			+=	'		<div class="infoBox">';
+							str 			+=	'			<div class="itemTitle">'+goods.goodsName+'</div>';
+							str 			+=	'			<div class="itemSpec">'+goods.goodsInfo+'</div>';
+							str 			+=	'			<div class="itemPrice">'+numberWithCommas(goods.goodsPrice)+' 원</div>';
+							str 			+=	'		</div>';
+							str 			+=	'		<div class="imgBox">';
+							if(goods.goodsImg1){
+								str 			+=	'			<img src="http://ars.heeyam.com'+goods.goodsImg1+'">';
+							}
+							str 			+=	'		</div>';
+							str 			+=	'		<a href="/goods/goodsSpec?no='+goods.goodsCode+'"></a>';
+							str 			+=	'	</li>';
+						});
+					}/* else {
+						str 			+=	'	<li>';
+						str 			+=	'		<div class="infoEmpty">등록된 메뉴가 없습니다.</div>';
+						str 			+=	'	</li>';
+					}*/
+					str 			+=	'	</ul>';
+			});
+		} else {
+					str 			+=	'<div class="infoEmpty">등록된 상품이 없습니다.</div>';
+		}
+
+		if(allGoods.length){
+				str 				+=	'<div class="menuSubTitle">전체메뉴</div>';
+				str 				+=	'	<ul>';
+				$.each(allGoods, function(index, allG) {
+					str 			+=	'		<li>';
+					str 			+=	'			<div class="infoBox">';
+					str 			+=	'				<div class="itemTitle">'+allG.goodsName+'</div>';
+					str 			+=	'				<div class="itemSpec">'+allG.goodsInfo+'</div>';
+					str 			+=	'				<div class="itemPrice">'+numberWithCommas(allG.goodsPrice)+' 원</div>';
+					str 			+=	'			</div>';
+					str 			+=	'			<div class="imgBox">';
+					if(allG.goodsImg1){
+						str 			+=	'				<img src="http://ars.heeyam.com'+allG.goodsImg1+'">';
+					}
+					str 			+=	'			</div>';
+					str 			+=	'			<a href="/goods/goodsSpec?no='+allG.goodsCode+'"></a>';
+					str 			+=	'		</li>';
+				});
+				str 			+=	'	</ul>';
+		}
+
+		// 리뷰
+		let str1 					=	'';
+		if(reviewList.length){
+			$('#reviewTot').html(reviewList.length+'개');
+			for(var i = 0 ; i < reviewList.length ; i ++){
+				let review 			=	reviewList[i];
+				str1 				+=	'<li>';
+				str1 				+=	'	<div class="reviewRateBox">';
+				str1 				+=	'		<i class="ratingStar activated"></i>';
+				str1 				+=	'		<i class="ratingStar activated"></i>';
+				str1 				+=	'		<i class="ratingStar activated"></i>';
+				str1 				+=	'		<i class="ratingStar activated"></i>';
+				str1 				+=	'		<i class="ratingStar activated"></i>';
+				str1				+=	'	</div>';
+				str1				+=	'	<div class="reviewImgBox">';
+				str1				+=	'	    <img src="http://ars.heeyam.com/files/corpImg/2020/202004/20200409183014_1.jpg">';
+				str1				+=	'	</div>';
+				str1				+=	'	<div class="f_bold marginB10">'+review.reviewText+'</div>'
+				str1				+=	'	<div class="f_main">'+review.orderTitle+'</div>';
+				str1				+=	'</li>';
+			}
+		} else {
+			str1					+=	'<li class="infoEmpty">등록된 리뷰가 없습니다.</li>';
+		}
+
+		let str2 					=	'';
+		if(orderInfo.length){
+			for(var i = 0 ; i < orderInfo.length ; i ++){
+				let order 			=	orderInfo[i];
+				str2				+=	'<li>';
+				str2				+=	'	<div class="orderInfoGroup">';
+				str2				+=	'		<div class="orderTime">'+order.regDate+'</div>';
+				str2				+=	'		<div class="itemTitle">'+order.orderTitle+'</div>';
+				str2				+=	'		<div class="itemInfo">';
+				str2				+=	'			<div class="chosenOptions">';
+				str2				+=	'				<span>'+numberWithCommas(order.amount)+' 원</span>';
+				str2				+=	'			</div>';
+				str2				+=	'		</div>';
+				str2				+=	'		<a class="orderSpecLink" href="/order/orderSpec?no='+order.orderCode+'">';
+				str2				+=	'			<img src="/common/img/nextLink.png">';
+				str2				+=	'		</a>';
+				str2				+=	'	</div>';
+				str2				+=	'</li>';
+			}
+		} else {
+			str2					+=	'<li class="infoEmpty">주문내역이 없습니다.</li>';
+		}
+
+		$('#menuList').html(str);
+		$('.reviewList').html(str1);
+		$('#cartNum').html(cartNum);
+		$('.orderListBox').html(str2);
+	});
+}
+
+function go_cart(){
+	let token				=	$('input[name="token"]').val();
+	let url					=	'/my/event/myCart_get_cart';
+	let dataType			=	'json';
+	let param				= 	{
+		token				:	token
+	};
+
+	postService(url, dataType, param, function(data){
+		let cart 				=	data.cart;
+		if(cart.length){
+			location.href 		=	'/my/myCart';
+		} else {
+			$('#popupText').html('장바구니에 메뉴를 추가해주세요.');
+			$('#checkCart').val(0);
+			open_popUp();
+		}
+
+	});
+}
