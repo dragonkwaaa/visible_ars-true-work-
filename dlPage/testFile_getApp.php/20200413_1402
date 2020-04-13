@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<?php include $_SERVER['DOCUMENT_ROOT'] .  '/common/pages/head.php';?> 
+
+<body>
+
+
+
+<!-- :: ksg_20200413_1156 single : getAppMod 버전으로. -->
+<!-- <div class="container main"> -->
+<div class="container getAppMod">
+
+
+
+	<div class="contents">
+
+		<!-- :: ksg_20200413_1157 open : 겟앱 전용 헤드라인 -->
+		<div class="section headLineSect">
+			<!-- <a href="../" class="backArrow">
+				<img src="/common/img/icon_backArrow.png">
+			</a>
+			<span class="headTitle">주문하기</span> -->
+		</div>
+		<!-- :: ksg_20200413_1157 close : 겟앱 전용 헤드라인 -->
+
+
+
+		<!-- :: ksg_20200413_1204 open :  내용 파트  -->
+		<div class="section getAppSect">
+			<img src="/common/img/guideImg_header.png" class="getAppImgUpper"/>
+			<img src="/common/img/guideImg_middle.png" class="getAppImgMiddle"/>
+
+			<div class="btnGroup">
+				<a class="getAppBtn" href="javascript:void(0);">앱 다운로드</a>
+			</div>
+			<img src="/common/img/guideImg_bottom.png" class="getAppImgBottom"/>
+		</div>
+		<!-- :: ksg_20200413_1204 close :  내용 파트  -->
+
+
+	</div>
+</div>
+<script>
+</script>
+</body>
+</html>
