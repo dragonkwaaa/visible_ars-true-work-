@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<?php include $_SERVER['DOCUMENT_ROOT'] .  '/common/pages/head.php';
+$orderCode							=	$SubFunction->allTags($_GET['no']);
+
+if(!$orderCode){
+	$CommonManager->goPage('/', '잘못된 접근입니다.');
+	exit;
+}
+
+?>
+
+<body>
+<div class="container main">
+	<div class="contents">
+		<form name="frm" id="frm" onkeypress="if(event.keyCode==13) {document.frm.submit(); return false;}">
+			<input type="hidden" name="token" value="<?=$_SESSION['token'][$Common->nowPage()]?>">
+			<input type="hidden" name="orderCode" value="<?= $orderCode?>">
+			<input type="hidden" name="reviewStar" value="0">
+
+		<!-- :: 뒤로가기 버튼 추가 파트. -->
+		<div class="section headLineSect">
+			<a href="../" class="backArrow">
+				<img src="/common/img/backArrowThin.png">
+			</a>
+			<span class="headTitle">리뷰쓰기</span>
+		</div>
+
+		<div class="section reviewWriteSect">
+			<div class="title">음식점을 평가해 주세요.</div>
+			<div class="infoText">
+				<div class="storeName">야식을품은닭</div>
+				<div class="goodsName">한마리 3가지맛 (뼈or순살)</div>
+			</div>
+			<div class="storeRateGroup">
+				<i class="ratingStar" onclick="setStar(1)"></i>
+				<i class="ratingStar" onclick="setStar(2)"></i>
+				<i class="ratingStar" onclick="setStar(3)"></i>
+				<i class="ratingStar" onclick="setStar(4)"></i>
+				<i class="ratingStar" onclick="setStar(5)"></i>
+			</div>
+
+			<div class="witeReviewGroup">
+				<textarea placeholder="리뷰를 작성해 주세요." id="reviewText" name="reviewText"></textarea>
+			</div>
+
+			<div class="sizeFixImg">
+				<div class="imgUploadBox">
+					<input type="file" class="hide" accept="image/*" name="img_1" onchange="img_sel(this, event)">
+					<a href="javascript:void(0)" class="upload_btn" onclick="img_upload(this)"></a>
+				</div>
+			</div>
+		</div>
+		</form>
+
+		
+		<div class="btnBox shopOrderBtn">
+			<a class="sumitBtn" href="javascript:set_review()">등록</a>
+		</div>
+	</div>
+</div>
+<script src="/common/js/exif-js.js"></script>
+<script src="/common/js/imgSet.js"></script>
+<script src="/order/js/reviewWrite.js"></script>
+<script>
+// :: 별점 평가 스크립트
+$(document).on('click', 'i.ratingStar', function(){
+	$('i.ratingStar').removeClass('activated');
+	$(this).addClass('activated');
+	$(this).prevAll('i.ratingStar').addClass('activated');
+})
+</script>
+</body>
+</html>
