@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<?php include $_SERVER['DOCUMENT_ROOT'] .  '/common/pages/head.php';?> 
+<body>
+<div class="container getAppMod">
+	<div class="contents">
+		<div class="section headLineSect">
+			<!-- <div class="getAppLogo"></div> -->
+		</div>
+		<div class="section getAppSect">
+			<img src="/common/img/guideImg_header.png" class="getAppImgUpper"/>
+			<img src="/common/img/guideImg_middle.png" class="getAppImgMiddle"/>
+
+			<div class="btnGroup">
+				<a class="getAppBtn" href="javascript:void(0);">앱 다운로드</a>
+			</div>
+			<img src="/common/img/guideImg_bottom.png" class="getAppImgBottom"/>
+		</div>
+	</div>
+</div>
+<script>
+</script>
+</body>
+</html>
