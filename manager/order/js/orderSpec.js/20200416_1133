@@ -1,0 +1,145 @@
+$(document).ready(function(){
+	get_order();
+});
+
+
+function get_order(){
+	$('#orderList').html('');
+
+	let orderCode			=	$('input[name="orderCode"]').val();
+	let url					=	'/manager/order/event/orderSpec_get_order';
+	let dataType			=	'json';
+	let param				= 	{
+		orderCode			:	orderCode
+	};
+
+	postService(url, dataType, param, function(data){
+		let info			=	data.orderInfo;
+		let goods			=	data.orderGoods;
+
+		let str 			=	'';
+
+		$('#orderState').html(info.stateStr);
+		$('#receiveMobile').html(phone_format(info.receiveMobile));
+		$('#receiveAddr').html(info.receiveAddr+' '+info.receiveAddrDetail);
+		var requestAdd		=	'';
+		if(info.isDisposable == 1){
+			 requestAdd		=	' (일회용품 안 주셔도 됩니다.)';
+		}
+		$('#requestMsg').html(info.requestMsg+requestAdd);
+		$('#no').html(info.OrderNo);
+		$('#regDate').html(info.regDate);
+		$('#totGoodsPrice').html(numberWithCommas(info.totGoodsPrice) + ' 원');
+		$('#deliveryPrice').html(numberWithCommas(info.deliveryPrice) + ' 원');
+		$('#amount').html(numberWithCommas(info.amount) + ' 원');
+
+		var howToStr 		=	'앱에서 결제';
+		if(info.howToPay == 2){
+			howToStr 		=	'현장결제';
+		}
+		var payStr 			=	'';
+		var cardName 		=	'';
+		if(info.payMethod == 1){
+			payStr 			=	'신용/체크카드';
+			cardName 		=	info.cardName;
+		}
+		if(info.payMethod == 2){
+			payStr 			=	'핸드폰결제';
+		}
+		if(info.payMethod == 3){
+			payStr 			=	'신용카드';
+		}
+		if(info.payMethod == 4){
+			payStr 			=	'현금결제';
+		}
+
+		$('#payMethod').html(howToStr+' ( '+payStr+' )');
+		$('#cardName').html(cardName);
+		$('#pgAmount').html(numberWithCommas(info.amount) + ' 원');
+		$('#authDate').html(info.authDate);
+
+
+		if(goods.length){
+			for(var i = 0 ; i < goods.length ; i ++){
+
+				var gd 			=	goods[i];
+				var opData1 	=	gd.op1;
+				var opData2 	=	gd.op2;
+
+
+				str				+=	'<tr>';
+				str				+=	'	<td>';
+				str				+=	'		<img src="'+gd.goodsImg+'" style="width : 100%;">';
+				str				+=	'	</td>';
+				str				+=	'	<td>'+gd.goodsName+'</td>';
+				str				+=	'	<td>'+gd.cateName+'</td>';
+				str				+=	'	<td>'+numberWithCommas(gd.goodsPrice)+' 원</td>';
+
+				str				+=	'	<td>';
+				if(opData1){
+					for(var k = 0 ; k < opData1.length ; k ++){
+						op1 			=	opData1[k];
+						str				+=	'	<div>'+op1.opName+' : '+op1.opInfo+'(+'+numberWithCommas(op1.opPrice)+')</div>';
+					}
+				}
+				str				+=	'	</td>';
+
+				str				+=	'	<td>';
+				if(opData2){
+					for(var k = 0 ; k < opData2.length ; k ++){
+						op2 			=	opData2[k];
+						str				+=	'	<div>'+op2.opName+' : '+op2.opInfo+'(+'+numberWithCommas(op2.opPrice)+')</div>';
+					}
+				}
+				str				+=	'	</td>';
+
+				str				+=	'	<td>'+gd.qty+' 개</td>';
+				str				+=	'	</tr>';
+			}
+
+			//--상세페이지 하단 주문상태 버튼 제어----------//
+
+			var orderState 		=	info.orderState;
+			var stateStr 		=	'주문확인';
+			if(orderState == 1){
+				let buttonStr 	=	'';
+
+				buttonStr 		+=	'<a href="javascript:updateState(4)" class="ml15 btn col_darkGrey">주문취소</a>';
+
+				$('#buttonSel').append(buttonStr);
+			}
+			if(orderState == 2){
+				stateStr		=	'배달완료';
+			}
+			$('#stateStr').html(stateStr);
+			if(orderState == 3){
+				$('#stateStr').remove();
+			}
+			if(orderState == 4){
+				$('#stateStr').remove();
+			}
+			//------------------------------------------//
+
+			$('#orderList').html(str);
+		}
+	});
+}
+
+function updateState(updateState){
+	let orderCode 			=	$('input[name="orderCode"]').val();
+	let token				=	$('input[name="token"]').val();
+	let	type 				=	$('input[name="type"]').val();
+
+	let url 				=	'/manager/order/event/orderSpec_update_orderState';
+	let dataType			=	'json';
+	let param				= 	{
+		token					:	token,
+		orderCode 				:	orderCode,
+		type					:	type,
+		updateState 			:	updateState
+	};
+
+	if(confirm('주문상태를 바꾸시겠습니까?')){
+		postService(url, dataType, param, '', '');
+	}
+}
